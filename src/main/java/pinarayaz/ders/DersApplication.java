@@ -7,6 +7,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -14,6 +15,7 @@ import java.util.List;
  * Created by PINAR on 24.1.2018.
  */
 public class DersApplication {
+    private static final List<String> VALID_COURSES = Arrays.asList("CS 202", "CS 224");
 
     public static void main(String args[]) throws IOException {
 
@@ -33,7 +35,14 @@ public class DersApplication {
         }
 
         for (Section s : sectionList) {
-            System.out.println(s.toString());
+            for (String course : VALID_COURSES) {
+                if (s.getCourseId().startsWith(course)) {
+                    System.out.println(s.toString());
+//                    if(s.getQuota() )
+                }
+
+            }
+
         }
     }
 }
