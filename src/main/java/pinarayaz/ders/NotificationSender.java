@@ -1,6 +1,5 @@
 package pinarayaz.ders;
 
-import com.sun.tools.corba.se.idl.constExpr.Not;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -11,8 +10,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Class that sends notifications
- * Created by PINAR on 24.1.2018.
+ * Class that sends notifications over telegram
+ *
+ * @author ozgunawesome
  */
 public class NotificationSender extends TelegramLongPollingBot {
     private final String botToken;
@@ -34,46 +34,83 @@ public class NotificationSender extends TelegramLongPollingBot {
     }
     // end singleton methods
 
+    // private constructor --this class should not be instantiated more than once
     private NotificationSender(String botToken) {
         super();
         this.botToken = botToken;
     }
 
-    void sendNotification(String message) {
+    /**
+     * method for sending Telegram message to all currently subscribed clients
+     *
+     * @param message String to send over Telegram
+     */
+    public void sendNotification(String message) {
         for (Long chatId : chatIds) {
-            sendMessage(chatId, message);
+            this.sendMessage(chatId, message);
         }
     }
 
+    // private method for sending a message to an individual client (identified by chat-ID)
     private void sendMessage(Long chatId, String text) {
         try {
             execute(new SendMessage().setChatId(chatId).setText(text));
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
-
     }
 
+    // abstract superclass methods
+
+    /**
+     * method that is executed when an update is received over Telegram
+     * Currently does nothing except add the client to the notification list.
+     *
+     * @param update update object
+     */
     public void onUpdateReceived(Update update) {
-        if (chatIds.add(update.getMessage().getChatId())) {
-            sendMessage(update.getMessage().getChatId(), "You are now added to the notification-list");
+        Long chatId = update.getMessage().getChatId();
+
+        if (chatIds.add(chatId)) {
+            sendMessage(chatId, "You are now added to the notification-list");
+        } else {
+            sendMessage(chatId, "You were already in the list");
         }
     }
 
+    /**
+     * Method that is executed when a bunch of updates are received all at once.
+     * I think its used when long polling shits the bed for a while
+     *
+     * @param updates list of updates
+     */
     public void onUpdatesReceived(List<Update> updates) {
         updates.forEach(this::onUpdateReceived);
     }
 
+    /**
+     * Method that returns the bot username as set when created.
+     * Telegram API calls this method to identify the bot
+     * @return bot username
+     */
     public String getBotUsername() {
         return "PinarIsSoCoolLikeBot";
     }
 
+    /**
+     * Method that returns the private token for the bot.
+     * Telegram API calls this method to authenticate the bot.
+     * @return
+     */
     public String getBotToken() {
         return botToken;
     }
 
+    /**
+     * Method that is executed by Telegram API when the bot is shutting down
+     */
     public void onClosing() {
-        System.out.println("closing");
+        sendNotification("The bot is now shutting down");
     }
 
 }
