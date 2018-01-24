@@ -45,9 +45,7 @@ public class DersApplication {
                         }
                         s.setQuotaPrev(s.getQuota());
                     }
-
                 }
-
             }
             Thread.sleep(5000L);
         }

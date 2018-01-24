@@ -18,6 +18,7 @@ public class NotificationSender extends TelegramLongPollingBot {
     private final Set<Long> chatIds = new HashSet<>();
 
     NotificationSender(String botToken) {
+        super();
         this.botToken = botToken;
     }
 
