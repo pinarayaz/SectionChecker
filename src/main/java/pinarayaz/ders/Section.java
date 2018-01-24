@@ -8,6 +8,21 @@ class Section {
     private String courseId;
     private int quota;
 
+    public int getQuotaPrev() {
+        return quotaPrev;
+    }
+
+    public void setQuota(int quota) {
+        this.quota = quota;
+    }
+
+    public void setQuotaPrev(int quotaPrev) {
+        this.quotaPrev = quotaPrev;
+    }
+
+    private int quotaPrev = 0;
+
+
     Section(String courseId, int quota) {
 
         this.courseId = courseId;
