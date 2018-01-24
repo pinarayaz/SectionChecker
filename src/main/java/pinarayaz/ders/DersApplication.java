@@ -19,20 +19,29 @@ public class DersApplication {
     private static final List<SectionMapUpdater> UPDATERS = Arrays.asList(new SectionMapUpdater("CS"),
             new SectionMapUpdater("HUM"), new SectionMapUpdater("MATH"), new SectionMapUpdater("PHYS"));
 
-    public static void main(String args[]) throws IOException, InterruptedException, TelegramApiRequestException {
-        ApiContextInitializer.init();
+    public static void main(String args[]) throws InterruptedException {
 
-        NotificationSender sender = new NotificationSender(args[0]);
-        Map<String, Section> sectionMap = new HashMap<String, Section>();
-        TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
-        telegramBotsApi.registerBot(sender);
+        // initialize and register Telegram bot
+        ApiContextInitializer.init();
+        try {
+            new TelegramBotsApi().registerBot(NotificationSender.init(args[0]));
+
+        } catch (TelegramApiRequestException e) {
+            // Failed to register Telegram bot - stop execution
+            e.printStackTrace();
+            System.err.println("Telegram bot registration failed");
+            System.exit(1);
+        }
+        // end initialize and register Telegram bot
+
+        Map<String, Section> sectionMap = new HashMap<>();
 
         System.out.println("10 sec pause for bot registrations");
         Thread.sleep(10000L);
 
         while (true) {
-            for (SectionMapUpdater u : UPDATERS) {
-                u.update(sectionMap);
+            for (SectionMapUpdater updater : UPDATERS) {
+                updater.update(sectionMap);
             }
 
             for (Map.Entry<String, Section> entry : sectionMap.entrySet()) {
@@ -41,13 +50,11 @@ public class DersApplication {
                     if (s.getCourseId().startsWith(course)) {
                         //System.out.println(s.toString());
                         if (s.getQuota() != 0 && s.getQuotaPrev() == 0) {
-                            sender.sendNotification("quota for " + s.getCourseId() + " is now " + s.getQuota());
+                            NotificationSender.get().sendNotification("quota for " + s.getCourseId() + " is now " + s.getQuota());
                         }
                         s.setQuotaPrev(s.getQuota());
                     }
-
                 }
-
             }
             Thread.sleep(5000L);
         }
