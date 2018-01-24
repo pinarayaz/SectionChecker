@@ -33,8 +33,8 @@ public class DersApplication {
         Thread.sleep(10000L);
 
         while (true) {
-            for (SectionMapUpdater u : UPDATERS) {
-                u.update(sectionMap);
+            for (SectionMapUpdater updater : UPDATERS) {
+                updater.update(sectionMap);
             }
 
             for (Map.Entry<String, Section> entry : sectionMap.entrySet()) {
