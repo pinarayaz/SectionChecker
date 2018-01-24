@@ -38,6 +38,7 @@ public class NotificationSender extends TelegramLongPollingBot {
     private NotificationSender(String botToken) {
         super();
         this.botToken = botToken;
+        // todo read from file
     }
 
     /**
@@ -73,6 +74,7 @@ public class NotificationSender extends TelegramLongPollingBot {
 
         if (chatIds.add(chatId)) {
             sendMessage(chatId, "You are now added to the notification-list");
+            // todo save to file
         } else {
             sendMessage(chatId, "You were already in the list");
         }
