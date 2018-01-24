@@ -4,7 +4,6 @@ import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +55,7 @@ public class DersApplication {
                     }
                 }
             }
-            Thread.sleep(5000L);
+            Thread.sleep(20000L);
         }
     }
 }
