@@ -20,11 +20,15 @@ public class DersApplication {
             new SectionMapUpdater("HUM"), new SectionMapUpdater("MATH"), new SectionMapUpdater("PHYS"));
 
     public static void main(String args[]) throws IOException, InterruptedException, TelegramApiRequestException {
+        ApiContextInitializer.init();
+
         NotificationSender sender = new NotificationSender(args[0]);
         Map<String, Section> sectionMap = new HashMap<String, Section>();
-        ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         telegramBotsApi.registerBot(sender);
+
+        System.out.println("10 sec pause for bot registrations");
+        Thread.sleep(10000L);
 
         while (true) {
             for (SectionMapUpdater u : UPDATERS) {
