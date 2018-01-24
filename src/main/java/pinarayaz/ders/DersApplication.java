@@ -22,13 +22,18 @@ public class DersApplication {
     private static final List<String> VALID_COURSES = Arrays.asList("CS 202", "CS 224");
 
     public static void main(String args[]) throws IOException, InterruptedException, TelegramApiRequestException {
+        ApiContextInitializer.init();
+
         NotificationSender sender = new NotificationSender(args[0]);
         Map<String, Section> sectionMap = new HashMap<String, Section>();
-        ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         telegramBotsApi.registerBot(sender);
 
+        System.out.println("10 sec pause for bot registrations");
+        Thread.sleep(10000L);
+
         while (true) {
+
             Document doc = Jsoup.connect("https://stars.bilkent.edu.tr/homepage/ajax/plainOfferings.php?" +
                     "COURSE_CODE=CS&" +
                     "SEMESTER=20172&" +
