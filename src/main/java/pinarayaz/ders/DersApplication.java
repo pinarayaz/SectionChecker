@@ -1,9 +1,5 @@
 package pinarayaz.ders;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
@@ -19,7 +15,9 @@ import java.util.Map;
  * Created by PINAR on 24.1.2018.
  */
 public class DersApplication {
-    private static final List<String> VALID_COURSES = Arrays.asList("CS 202", "CS 224");
+    private static final List<String> VALID_COURSES = Arrays.asList("CS 202", "CS 224", "HUM 112", "MATH 230", "PHYS 102");
+    private static final List<SectionMapUpdater> UPDATERS = Arrays.asList(new SectionMapUpdater("CS"),
+            new SectionMapUpdater("HUM"), new SectionMapUpdater("MATH"), new SectionMapUpdater("PHYS"));
 
     public static void main(String args[]) throws IOException, InterruptedException, TelegramApiRequestException {
         NotificationSender sender = new NotificationSender(args[0]);
@@ -29,31 +27,15 @@ public class DersApplication {
         telegramBotsApi.registerBot(sender);
 
         while (true) {
-            Document doc = Jsoup.connect("https://stars.bilkent.edu.tr/homepage/ajax/plainOfferings.php?" +
-                    "COURSE_CODE=CS&" +
-                    "SEMESTER=20172&" +
-                    "submit=List%20Selected%20Offerings&" +
-                    "rndval=" + System.currentTimeMillis())
-                    .get();
-
-            for (Element element : doc.select("tbody").select("tr")) {
-                Elements divisionElements = element.select("td");
-                if (divisionElements.get(12).html().equalsIgnoreCase("unlimited")) {
-                    continue;
-                }
-                String courseId = divisionElements.get(0).html();
-                if (sectionMap.containsKey(courseId)) {
-                    sectionMap.get(courseId).setQuota(Integer.valueOf(divisionElements.get(13).html()));
-                } else {
-                    sectionMap.put(courseId, new Section(courseId, Integer.valueOf(divisionElements.get(13).html())));
-                }
+            for (SectionMapUpdater u : UPDATERS) {
+                u.update(sectionMap);
             }
 
             for (Map.Entry<String, Section> entry : sectionMap.entrySet()) {
                 for (String course : VALID_COURSES) {
                     Section s = entry.getValue();
                     if (s.getCourseId().startsWith(course)) {
-                        System.out.println(s.toString());
+                        //System.out.println(s.toString());
                         if (s.getQuota() != 0 && s.getQuotaPrev() == 0) {
                             sender.sendNotification("quota for " + s.getCourseId() + " is now " + s.getQuota());
                         }
