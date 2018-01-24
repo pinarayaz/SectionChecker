@@ -5,6 +5,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -41,7 +42,7 @@ public class SectionMapUpdater {
                     sectionMap.put(courseId, new Section(courseId, Integer.valueOf(divisionElements.get(13).html())));
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException | IOException e) {
             // Handle all exceptions so the entire program doesn't crash if anything fails.
             NotificationSender.get()
                     .sendNotification("Update for departmentId='" + departmentId + "' failed: " + e.getLocalizedMessage());
