@@ -1,13 +1,14 @@
 package pinarayaz.ders;
 
 /**
+ * Model class that holds a course section
  * Created by PINAR on 24.1.2018.
  */
-public class Section {
+class Section {
     private String courseId;
     private int quota;
 
-    public Section(String courseId, int quota) {
+    Section(String courseId, int quota) {
 
         this.courseId = courseId;
         this.quota = quota;
@@ -21,4 +22,13 @@ public class Section {
 
         return courseId;
     }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "courseId='" + courseId + '\'' +
+                ", quota=" + quota +
+                '}';
+    }
 }
+
