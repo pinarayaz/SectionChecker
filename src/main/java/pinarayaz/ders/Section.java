@@ -43,6 +43,7 @@ class Section {
         return "Section{" +
                 "courseId='" + courseId + '\'' +
                 ", quota=" + quota +
+                ", quotaPrev=" + quotaPrev +
                 '}';
     }
 }
