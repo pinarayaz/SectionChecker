@@ -20,11 +20,19 @@ public class DersApplication {
     private static final List<SectionMapUpdater> UPDATERS = Arrays.asList(new SectionMapUpdater("CS"),
             new SectionMapUpdater("HUM"), new SectionMapUpdater("MATH"), new SectionMapUpdater("PHYS"));
 
-    public static void main(String args[]) throws IOException, InterruptedException, TelegramApiRequestException {
+    public static void main(String args[]) throws InterruptedException {
 
         // initialize and register Telegram bot
         ApiContextInitializer.init();
-        new TelegramBotsApi().registerBot(NotificationSender.init(args[0]));
+        try {
+            new TelegramBotsApi().registerBot(NotificationSender.init(args[0]));
+
+        } catch (TelegramApiRequestException e) {
+            // Failed to register Telegram bot - stop execution
+            e.printStackTrace();
+            System.err.println("Telegram bot registration failed");
+            System.exit(1);
+        }
         // end initialize and register Telegram bot
 
         Map<String, Section> sectionMap = new HashMap<>();

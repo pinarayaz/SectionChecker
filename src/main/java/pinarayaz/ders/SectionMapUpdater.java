@@ -18,13 +18,22 @@ public class SectionMapUpdater {
         this.departmentId = departmentId;
     }
 
-    public void update(Map<String, Section> sectionMap) throws IOException {
-        Document doc = Jsoup.connect("https://stars.bilkent.edu.tr/homepage/ajax/plainOfferings.php?" +
-                "COURSE_CODE=" + departmentId + "&" +
-                "SEMESTER=20172&" +
-                "submit=List%20Selected%20Offerings&" +
-                "rndval=" + System.currentTimeMillis())
-                .get();
+    public void update(Map<String, Section> sectionMap) {
+
+        Document doc = null;
+        try {
+            doc = Jsoup.connect("https://stars.bilkent.edu.tr/homepage/ajax/plainOfferings.php?" +
+                    "COURSE_CODE=" + departmentId + "&" +
+                    "SEMESTER=20172&" +
+                    "submit=List%20Selected%20Offerings&" +
+                    "rndval=" + System.currentTimeMillis())
+                    .get();
+        } catch (IOException e) {
+            // Handle this IOException so the entire program doesn't crash if the above HTTP request times out.
+            NotificationSender.get()
+                    .sendNotification("Update for departmentId='" + departmentId + "' failed: " + e.getLocalizedMessage());
+            return;
+        }
 
         for (Element element : doc.select("tbody").select("tr")) {
             Elements divisionElements = element.select("td");
