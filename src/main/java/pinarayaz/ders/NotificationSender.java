@@ -1,5 +1,6 @@
 package pinarayaz.ders;
 
+import com.sun.tools.corba.se.idl.constExpr.Not;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -17,7 +18,23 @@ public class NotificationSender extends TelegramLongPollingBot {
     private final String botToken;
     private final Set<Long> chatIds = new HashSet<>();
 
-    NotificationSender(String botToken) {
+    // singleton methods
+    private static NotificationSender _SINGLETON;
+    public static NotificationSender init(String botToken) {
+        if (_SINGLETON == null) {
+            _SINGLETON = new NotificationSender(botToken);
+        }
+        return _SINGLETON;
+    }
+    public static NotificationSender get() {
+        if (_SINGLETON == null) {
+            throw new RuntimeException("Bot not initialized..!");
+        }
+        return _SINGLETON;
+    }
+    // end singleton methods
+
+    private NotificationSender(String botToken) {
         super();
         this.botToken = botToken;
     }

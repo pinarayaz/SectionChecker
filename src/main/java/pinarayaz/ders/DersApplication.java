@@ -1,5 +1,6 @@
 package pinarayaz.ders;
 
+import com.sun.tools.corba.se.idl.constExpr.Not;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
@@ -20,12 +21,13 @@ public class DersApplication {
             new SectionMapUpdater("HUM"), new SectionMapUpdater("MATH"), new SectionMapUpdater("PHYS"));
 
     public static void main(String args[]) throws IOException, InterruptedException, TelegramApiRequestException {
-        ApiContextInitializer.init();
 
-        NotificationSender sender = new NotificationSender(args[0]);
-        Map<String, Section> sectionMap = new HashMap<String, Section>();
-        TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
-        telegramBotsApi.registerBot(sender);
+        // initialize and register Telegram bot
+        ApiContextInitializer.init();
+        new TelegramBotsApi().registerBot(NotificationSender.init(args[0]));
+        // end initialize and register Telegram bot
+
+        Map<String, Section> sectionMap = new HashMap<>();
 
         System.out.println("10 sec pause for bot registrations");
         Thread.sleep(10000L);
@@ -41,7 +43,7 @@ public class DersApplication {
                     if (s.getCourseId().startsWith(course)) {
                         //System.out.println(s.toString());
                         if (s.getQuota() != 0 && s.getQuotaPrev() == 0) {
-                            sender.sendNotification("quota for " + s.getCourseId() + " is now " + s.getQuota());
+                            NotificationSender.get().sendNotification("quota for " + s.getCourseId() + " is now " + s.getQuota());
                         }
                         s.setQuotaPrev(s.getQuota());
                     }
